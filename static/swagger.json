@@ -1,0 +1,190 @@
+{
+ "swagger": "2.0",
+ "info": {
+   "title": "Recipes API",
+   "version": "1.0.0"
+ },
+ "paths": {
+   "/api/v1.0/recipes": {
+     "get": {
+       "description": "Returns random recipes",
+       "produces": [
+         "application/json"
+       ],
+       "responses": {
+         "200": {
+           "description": "Successful operation"
+         }
+       }
+     },
+     "post": {
+       "description": "Create recipe",
+       "produces": [
+         "application/json"
+       ],
+       "parameters": [
+         {
+           "in": "body",
+           "name": "body",
+           "description": "Add recipe to database",
+           "required": true,
+           "schema": {
+             "$ref": "#/definitions/Recipe"
+           }
+         }
+       ],
+       "responses": {
+         "201": {
+           "description": "Successful operation"
+         }
+       }
+     }
+   },
+   "/api/v1.0/recipes/{id}": {
+     "get": {
+       "description": "Returns recipe with id",
+       "produces": [
+         "application/json"
+       ],
+       "parameters": [
+         {
+           "name": "id",
+           "in": "path",
+           "description": "ID of recipe to return",
+           "required": true,
+           "type": "integer"
+         }
+       ],
+       "responses": {
+         "200": {
+           "description": "Successful operation"
+         }
+       }
+     },
+     "delete": {
+       "description": "Deletes recipe by ID",
+       "produces": [
+         "application/json"
+       ],
+       "parameters": [
+         {
+           "name": "id",
+           "in": "path",
+           "description": "ID of recipe to delete",
+           "required": true,
+           "type": "integer"
+         }
+       ],
+       "responses": {
+         "200": {
+           "description": "Recipe successfully deleted"
+         },
+         "404": {
+           "description": "Recipe not found"
+         }
+       },
+       "security": [
+         {
+           "recipe_auth": [
+             "write:recipes"
+           ]
+         }
+       ]
+     }
+   },
+   "/recipe/{recipeId}": {
+     "post": {
+       "tags": [
+         "recipe"
+       ],
+       "summary": "Updates a recipe with form data",
+       "description": "",
+       "operationId": "updateRecipeWithForm",
+       "parameters": [
+         {
+           "name": "recipeId",
+           "in": "path",
+           "description": "ID of recipe that needs to be updated",
+           "required": true,
+           "schema": {
+             "type": "integer",
+             "format": "int64"
+           }
+         },
+         {
+           "name": "name",
+           "in": "query",
+           "description": "Name of recipe that needs to be updated",
+           "schema": {
+             "type": "string"
+           }
+         },
+         {
+           "name": "status",
+           "in": "query",
+           "description": "Status of recipe that needs to be updated",
+           "schema": {
+             "type": "string"
+           }
+         }
+       ],
+       "responses": {
+         "400": {
+           "description": "Invalid input"
+         }
+       },
+       "security": [
+         {
+           "recipe_auth": [
+             "write:recipes",
+             "read:recipes"
+           ]
+         }
+       ]
+     }
+   }
+ },
+ "definitions": {
+   "Recipe": {
+     "type": "object",
+     "required": [
+       "name",
+       "ingredients",
+       "instructions"
+     ],
+     "properties": {
+       "name": {
+         "type": "string",
+         "example": "Spaghetti Carbonara"
+       },
+       "ingredients": {
+         "type": "array",
+         "items": {
+           "type": "string"
+         },
+         "example": ["400g spaghetti", "200g pancetta", "4 eggs", "100g parmesan"]
+       },
+       "instructions": {
+         "type": "string",
+         "example": "1. Cook pasta. 2. Fry pancetta. 3. Mix eggs and cheese. 4. Combine all ingredients."
+       },
+       "cookingTime": {
+         "type": "integer",
+         "example": 30,
+         "description": "Cooking time in minutes"
+       }
+     }
+   }
+ },
+ "securityDefinitions": {
+   "recipe_auth": {
+     "type": "oauth2",
+     "authorizationUrl": "https://recipes.api/oauth/authorize",
+     "flow": "implicit",
+     "scopes": {
+       "write:recipes": "modify recipes in your account",
+       "read:recipes": "read your recipes"
+     }
+   }
+ }
+}
